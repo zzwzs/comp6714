@@ -1,5 +1,11 @@
 import os, sys
 import pickle
+import nltk
+nltk.download('wordnet',quiet=True)
+nltk.download('omw-1.4',quiet=True)
+nltk.download('punkt',quiet=True)
+nltk.download('averaged_perceptron_tagger',quiet=True)
+import nltk.stem as ns
 
 if __name__ == '__main__':
   #connectors = ['"']
@@ -127,6 +133,8 @@ if __name__ == '__main__':
                   index_dict[doc_id][1].append(dic_a[doc_id][1][numa])
             #if dic_b[doc_id][0][numb] > dic_a[doc_id][0][numa] + distance:
             #  break
+        ans = [list(doc_id_list),index_dict]
+        #print(ans)
       return [list(doc_id_list),index_dict]
       
   def slash_search(a,b,dis):
@@ -217,6 +225,9 @@ if __name__ == '__main__':
 
   def trans(item):
     terms_list = []
+    #print(item)
+    if item == ['']:
+      return [[],{}]
     for s in item:
       if isinstance(s,str):
         hold = ''
@@ -237,7 +248,25 @@ if __name__ == '__main__':
               k += 1
               if k ==len(s):
                 break
-            terms_list.append(search_word(hold))
+
+            hold = [hold]
+            pos_tags = nltk.pos_tag(hold)
+            #print(pos_tags)
+            new_string = ''
+            for word in pos_tags:
+              lemmatizer = ns.WordNetLemmatizer()
+              if word[1][0] == 'N': 
+                n_lemma = lemmatizer.lemmatize(word[0], pos='n')
+                new_string += n_lemma
+              elif word[1][0] == 'V': 
+                v_lemma = lemmatizer.lemmatize(word[0], pos='v')
+                new_string += v_lemma
+              else:
+                new_string += word[0]
+            #print(new_string)
+
+
+            terms_list.append(search_word(new_string))
             terms_list.append(s[i:i+1])
             terms_list.append(num)
             hold = ''
@@ -252,17 +281,71 @@ if __name__ == '__main__':
               k += 1
               if k ==len(s):
                 break
-            terms_list.append(search_word(hold))
+
+            hold = [hold]
+            pos_tags = nltk.pos_tag(hold)
+            #print(pos_tags)
+            new_string = ''
+            for word in pos_tags:
+              lemmatizer = ns.WordNetLemmatizer()
+              if word[1][0] == 'N': 
+                n_lemma = lemmatizer.lemmatize(word[0], pos='n')
+                new_string += n_lemma
+              elif word[1][0] == 'V': 
+                v_lemma = lemmatizer.lemmatize(word[0], pos='v')
+                new_string += v_lemma
+              else:
+                new_string += word[0]
+            #print(new_string)
+
+
+            terms_list.append(search_word(new_string))
             terms_list.append(s[i:i+1])
             terms_list.append(num)
             hold = ''
             i += (k-i-1)
           elif s[i] != '&' and hold != '':
-            terms_list.append(search_word(hold))
+            
+            hold = [hold]
+            pos_tags = nltk.pos_tag(hold)
+            #print(pos_tags)
+            new_string = ''
+            for word in pos_tags:
+              lemmatizer = ns.WordNetLemmatizer()
+              if word[1][0] == 'N': 
+                n_lemma = lemmatizer.lemmatize(word[0], pos='n')
+                new_string += n_lemma
+              elif word[1][0] == 'V': 
+                v_lemma = lemmatizer.lemmatize(word[0], pos='v')
+                new_string += v_lemma
+              else:
+                new_string += word[0]
+            #print(new_string)
+
+
+            terms_list.append(search_word(new_string))
             terms_list.append(s[i:i+1])
             hold = ''
           elif s[i] != ' ' and hold != '':
-            terms_list.append(search_word(hold))
+
+            hold = [hold]
+            pos_tags = nltk.pos_tag(hold)
+            #print(pos_tags)
+            new_string = ''
+            for word in pos_tags:
+              lemmatizer = ns.WordNetLemmatizer()
+              if word[1][0] == 'N': 
+                n_lemma = lemmatizer.lemmatize(word[0], pos='n')
+                new_string += n_lemma
+              elif word[1][0] == 'V': 
+                v_lemma = lemmatizer.lemmatize(word[0], pos='v')
+                new_string += v_lemma
+              else:
+                new_string += word[0]
+            #print(new_string)
+
+
+            terms_list.append(search_word(new_string))
             terms_list.append(s[i:i+1])
             hold = ''
           elif s[i] == ' ' and hold == '':
@@ -299,7 +382,22 @@ if __name__ == '__main__':
           i += 1
         if hold != '':
           #print(hold)
-          terms_list.append(search_word(hold))
+          hold = [hold]
+          pos_tags = nltk.pos_tag(hold)
+          #print(pos_tags)
+          new_string = ''
+          for word in pos_tags:
+            lemmatizer = ns.WordNetLemmatizer()
+            if word[1][0] == 'N': 
+              n_lemma = lemmatizer.lemmatize(word[0], pos='n')
+              new_string += n_lemma
+            elif word[1][0] == 'V': 
+              v_lemma = lemmatizer.lemmatize(word[0], pos='v')
+              new_string += v_lemma
+            else:
+              new_string += word[0]
+          #print(new_string)
+          terms_list.append(search_word(new_string))
       else:
         terms_list.append(s)
       #print(terms_list)
@@ -326,11 +424,13 @@ if __name__ == '__main__':
       if index >= len(terms_list):
         break
       if terms_list[index] == '+' and terms_list[index+1] != 's':
-        #print(terms_list[index+1])
+        #print(terms_list)
         terms_list[index] = plus_search(terms_list[index-1],terms_list[index+2],terms_list[index+1])
+        #print(terms_list)
         del terms_list[index+2]
         del terms_list[index+1]
         del terms_list[index-1]
+        #print(terms_list[0])
         index = 0
       index += 1
 
@@ -393,7 +493,7 @@ if __name__ == '__main__':
         del terms_list[index-1]
         index = 0
       index += 1
-
+    
     return terms_list[0]
 
   while True:
@@ -454,11 +554,13 @@ if __name__ == '__main__':
         if a[i] != '(' and a[i] != ')':
           hold += a[i]
         elif a[i] == '(':
-          a_lis.append(hold)
+          if hold != '':
+            a_lis.append(hold)
           hold = ''
           a_lis.append('(')
         else:
-          a_lis.append(hold)
+          if hold != '':
+            a_lis.append(hold)
           hold = ''
           a_lis.append(')')
       if hold != '':
@@ -471,7 +573,9 @@ if __name__ == '__main__':
     while '(' in a_lis:
       #print(a_lis)
       i = 0
+      
       while i < len(a_lis):
+        #print(a_lis)
         if a_lis[i] == ')':
           a_lis[i-1] = trans([a_lis[i-1]])
           del a_lis[i]
